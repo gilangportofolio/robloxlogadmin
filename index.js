@@ -4,12 +4,11 @@ const app = express();
 
 app.use(express.json());
 
-app.post('/webhook', async (req, res) => {
+app.post('/webhook', (req, res) => {
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     const body = JSON.stringify(req.body);
-    
     const url = new URL(webhookUrl);
-    
+
     const options = {
         hostname: url.hostname,
         path: url.pathname,
@@ -21,10 +20,12 @@ app.post('/webhook', async (req, res) => {
     };
 
     const request = https.request(options, (response) => {
+        console.log('Discord response:', response.statusCode);
         res.status(200).send('OK');
     });
 
     request.on('error', (err) => {
+        console.error('Error:', err);
         res.status(500).send('Error');
     });
 
@@ -33,5 +34,5 @@ app.post('/webhook', async (req, res) => {
 });
 
 app.listen(process.env.PORT || 3000, () => {
-    console.log('Proxy server running!');
+    console.log('✅ Proxy server running!');
 });
